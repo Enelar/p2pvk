@@ -33,7 +33,7 @@ void t_upnp()
 {
   route_table t;
   auto gw = t.Gateway();
-  //std::cout << gw;
+  std::cout << gw << std::endl;
 
   auto ips = t.LocalAddrToGW(gw);
 
@@ -42,6 +42,8 @@ void t_upnp()
     upnp pp(io, local_ip, gw);
     pp.OpenPort("test", 30000, upnp::UDP);
   }
+  std::cout << "EXIT";
+  std::this_thread::sleep_for(std::chrono::seconds(30));
 }
 
 void main()

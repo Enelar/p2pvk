@@ -59,25 +59,104 @@ string route_table::Gateway()
 }
 
 #include <assert.h>
+#include <iostream>
 
 vector<string> route_table::LocalAddrToGW(string remote)
 {
   PIP_ADAPTER_INFO adapters = nullptr;
   DWORD size = 0;
   assert(GetAdaptersInfo(adapters, &size) == ERROR_BUFFER_OVERFLOW);
-  adapters = (PIP_ADAPTER_INFO)malloc(size);
+  adapters = (PIP_ADAPTER_INFO)HeapAlloc(GetProcessHeap(), 0, size);
   assert(adapters);
   assert(GetAdaptersInfo(adapters, &size) == NO_ERROR);
 
   auto adapter = adapters;
+  auto pAdapter = adapter;
+  while (pAdapter) {
+    printf("\tComboIndex: \t%d\n", pAdapter->ComboIndex);
+    printf("\tAdapter Name: \t%s\n", pAdapter->AdapterName);
+    printf("\tAdapter Desc: \t%s\n", pAdapter->Description);
+    printf("\tAdapter Addr: \t");
+    for (auto i = 0; i < pAdapter->AddressLength; i++) {
+      if (i == (pAdapter->AddressLength - 1))
+        printf("%.2X\n", (int)pAdapter->Address[i]);
+      else
+        printf("%.2X-", (int)pAdapter->Address[i]);
+    }
+    printf("\tIndex: \t%d\n", pAdapter->Index);
+    printf("\tType: \t");
+    switch (pAdapter->Type) {
+    case MIB_IF_TYPE_OTHER:
+      printf("Other\n");
+      break;
+    case MIB_IF_TYPE_ETHERNET:
+      printf("Ethernet\n");
+      break;
+    case MIB_IF_TYPE_TOKENRING:
+      printf("Token Ring\n");
+      break;
+    case MIB_IF_TYPE_FDDI:
+      printf("FDDI\n");
+      break;
+    case MIB_IF_TYPE_PPP:
+      printf("PPP\n");
+      break;
+    case MIB_IF_TYPE_LOOPBACK:
+      printf("Lookback\n");
+      break;
+    case MIB_IF_TYPE_SLIP:
+      printf("Slip\n");
+      break;
+    default:
+      printf("Unknown type %ld\n", pAdapter->Type);
+      break;
+    }
+
+    printf("\tIP Address: \t%s\n",
+      pAdapter->IpAddressList.IpAddress.String);
+    printf("\tIP Mask: \t%s\n", pAdapter->IpAddressList.IpMask.String);
+
+    printf("\tGateway: \t%s\n", pAdapter->GatewayList.IpAddress.String);
+    printf("\t***\n");
+
+    if (pAdapter->DhcpEnabled) {
+      printf("\tDHCP Enabled: Yes\n");
+      printf("\t  DHCP Server: \t%s\n",
+        pAdapter->DhcpServer.IpAddress.String);
+
+      printf("\t  Lease Obtained: ");
+      /* Display local time */
+    }
+    else
+      printf("\tDHCP Enabled: No\n");
+
+    if (pAdapter->HaveWins) {
+      printf("\tHave Wins: Yes\n");
+      printf("\t  Primary Wins Server:    %s\n",
+        pAdapter->PrimaryWinsServer.IpAddress.String);
+      printf("\t  Secondary Wins Server:  %s\n",
+        pAdapter->SecondaryWinsServer.IpAddress.String);
+    }
+    else
+      printf("\tHave Wins: No\n");
+    pAdapter = pAdapter->Next;
+    printf("\n");
+  }
+
   while (adapter)
   {
+
     auto *gateway = &adapter->GatewayList;
+    std::cout << "ADAPTER: " << (int)adapter << adapter->AdapterName << std::endl;
     while (gateway)
-      if (gateway->IpAddress.String == remote)
+    {
+      std::cout << "GW " << (int)gateway << " ";
+      std::cout << "((" << remote << ")) ((" << string(gateway->IpAddress.String) << "))" << std::endl;
+      if (remote == gateway->IpAddress.String)
         goto up;
-      else
-        gateway = gateway->Next;
+     // break; // nasty workaround: using only first gateway
+      gateway = gateway->Next;
+    }
     adapter = adapter->Next;
   }
 
@@ -89,6 +168,6 @@ up:
     ret.push_back(ip->IpAddress.String);
     ip = ip->Next;
   }
-  free(adapters);
+  HeapFree(GetProcessHeap(), 0, adapters);
   return ret;
 }
