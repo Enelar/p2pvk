@@ -3,7 +3,7 @@
 
 #include <iostream>
 
-void f()
+void t_irc()
 {
   boost::asio::io_service io;
 
@@ -24,7 +24,15 @@ void f()
   }
 }
 
+#include "../upnp/route_table.h"
+
+void t_upnp()
+{
+  route_table t;
+  std::cout << t.Gateway();
+}
+
 void main()
 {
-  f();
+  t_upnp();
 }
