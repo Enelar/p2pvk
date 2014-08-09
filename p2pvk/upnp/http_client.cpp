@@ -12,7 +12,6 @@ const std::string UPNPSERVICE_WANIPCONNECTION1 = std::string(
 
 #include "http_client.h"
 
-#include "XMLParser/DOMParser.h"
 #include <WinSock2.h>
 
 #include <boost\format.hpp>
