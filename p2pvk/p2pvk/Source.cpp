@@ -1,15 +1,30 @@
 #include <boost/asio.hpp>
 #include "../irc/irc.h"
 
-void main()
+#include <iostream>
+
+void f()
 {
   boost::asio::io_service io;
-  boost::asio::ip::tcp::iostream("aa", "bb");
+
   irc test(io);
   test.Connect("Enetest434", "irc.freenode.org");
+
+  test.OnMessage([]( irc &, const string &a )
+  {
+    std::cout << a;
+  });
   test.Join("p2pvk_bots");
+
   while (1)
   {
+    char aa[1024];
+    std::cin.getline(aa, 1000);
+    test.ChannelSay(aa);
   }
-  test.Say("PRIVMSG #p2pvk_bots Hello");
+}
+
+void main()
+{
+  f();
 }

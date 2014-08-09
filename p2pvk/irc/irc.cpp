@@ -10,6 +10,12 @@ irc::irc(io_service &_io)
 {
 }
 
+irc::~irc()
+{
+  std::unique_lock<std::mutex> lk(m);
+  read_thread.get();
+}
+
 void irc::Connect(string addr, int port)
 {
   using ip::tcp;
@@ -32,17 +38,6 @@ void irc::Connect(string nick, string addr, int port)
   ReadOnce();
   Say("NICK " + nick);
   Say("USER guest tolmoon tolsun :Mr.Noname");
-
-  auto ShowResponce = [this]()
-  {
-    while (true)
-    {
-      ReadOnce();
-      std::this_thread::sleep_for(std::chrono::seconds(1));
-    }
-  };
-
-  async(std::launch::async, ShowResponce).wait_for(std::chrono::seconds(1));
 }
 
 string irc::ReadOnce()
@@ -65,7 +60,8 @@ void irc::UpdateConnectedStatus(const string &str)
 
 void irc::Join(string channel)
 {
-  Say("JOIN #" + channel);
+  last_channel = "#" + channel;
+  Say("JOIN " + last_channel);
 }
 
 void irc::Send(string msg)
@@ -78,6 +74,34 @@ void irc::Say(string msg)
   Send(msg + "\r\n");
 }
 
-void irc::OnMessage(function<void(irc &, string)>)
+void irc::ChannelSay(string msg)
 {
+  ChannelSay(last_channel, msg);
+}
+
+void irc::ChannelSay(string channel, string msg)
+{
+  Say("PRIVMSG " + channel + " :" + msg);
+}
+
+
+void irc::OnMessage(function<void(irc &, string)> f)
+{
+  assert(!reading);
+  reading = true;
+
+  auto ReadingFunctor = [this, f]()
+  {
+    while (true)
+    {
+      string readed = ReadOnce();
+      f(*this, readed);
+      if (!m.try_lock())
+        break;
+      m.unlock();
+    }
+  };
+
+  read_thread = async(std::launch::async, ReadingFunctor);
+  read_thread.wait_for(std::chrono::microseconds(1));
 }
