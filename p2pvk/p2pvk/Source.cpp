@@ -2,10 +2,11 @@
 #include "../irc/irc.h"
 
 #include <iostream>
+boost::asio::io_service io;
+
 
 void t_irc()
 {
-  boost::asio::io_service io;
 
   irc test(io);
   test.Connect("Enetest434", "irc.freenode.org");
@@ -25,11 +26,22 @@ void t_irc()
 }
 
 #include "../upnp/route_table.h"
+#include "../upnp/http_client.h"
+#include "../upnp/upnp.h"
 
 void t_upnp()
 {
   route_table t;
-  std::cout << t.Gateway();
+  auto gw = t.Gateway();
+  //std::cout << gw;
+
+  auto ips = t.LocalAddrToGW(gw);
+
+  for (auto local_ip : ips)
+  {
+    upnp pp(io, local_ip, gw);
+    pp.OpenPort("test", 30000, upnp::UDP);
+  }
 }
 
 void main()

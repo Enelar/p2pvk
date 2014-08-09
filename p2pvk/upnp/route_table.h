@@ -9,4 +9,5 @@ struct route_table
 {
   vector<route_rule> Fetch();
   string Gateway();
+  vector<string> LocalAddrToGW(string remote);
 };

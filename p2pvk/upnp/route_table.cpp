@@ -55,5 +55,40 @@ string route_table::Gateway()
   for (auto rule : Fetch())
     if (rule.is_primary_gateway)
       return rule.gateway;
-  return "";
+  return{};
+}
+
+#include <assert.h>
+
+vector<string> route_table::LocalAddrToGW(string remote)
+{
+  PIP_ADAPTER_INFO adapters = nullptr;
+  DWORD size = 0;
+  assert(GetAdaptersInfo(adapters, &size) == ERROR_BUFFER_OVERFLOW);
+  adapters = (PIP_ADAPTER_INFO)malloc(size);
+  assert(adapters);
+  assert(GetAdaptersInfo(adapters, &size) == NO_ERROR);
+
+  auto adapter = adapters;
+  while (adapter)
+  {
+    auto *gateway = &adapter->GatewayList;
+    while (gateway)
+      if (gateway->IpAddress.String == remote)
+        goto up;
+      else
+        gateway = gateway->Next;
+    adapter = adapter->Next;
+  }
+
+up:
+  vector<string> ret;
+  auto *ip = &adapter->IpAddressList;
+  while (ip)
+  {
+    ret.push_back(ip->IpAddress.String);
+    ip = ip->Next;
+  }
+  free(adapters);
+  return ret;
 }
