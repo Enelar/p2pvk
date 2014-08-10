@@ -32,6 +32,50 @@ boost::asio::ip::udp::endpoint ssdp::OpenPort() noexcept
   } while (true);
 }
 
+std::string ssdp::TryReadPacket(boost::asio::ip::udp::endpoint me, boost::posix_time::time_duration duration)
+{
+  boost::array<char, 1 << 10> a; // buffer overflow
+
+  boost::asio::deadline_timer timer(io);
+  timer.expires_from_now(duration);
+
+  std::size_t size = -1;
+  mutex m;
+  m.lock();
+
+  timer.async_wait([&](const boost::system::error_code& error)
+  {
+    m.unlock();
+  });
+
+  socket.async_receive_from(boost::asio::buffer(a), me, [&](const boost::system::error_code& error, std::size_t _s)
+  {
+    timer.cancel();
+    size = _s;
+    m.unlock();
+  });
+
+  while (io.run_one())
+    if (m.try_lock())
+      break;
+  m.unlock();
+  if (size == -1)
+    return{};
+
+  a[size] = 0;
+  return{ &a[0] };
+}
+
+std::string ssdp::ExtractLocation(const string &answer)
+{
+  string needle = "LOCATION: ";
+  auto pos = answer.find(needle);
+  if (pos == -1)
+    return "";
+  auto res = answer.substr(pos + needle.length());
+  return res.substr(0, res.find("\r\n"));
+}
+
 string ssdp::Discover()
 {
   boost::asio::ip::udp::endpoint me = OpenPort();
@@ -56,45 +100,6 @@ string ssdp::Discover()
 
   socket.send_to(boost::asio::buffer(MSEARCH_REQUEST), multicast);
 
-  auto TryReadPacket = [&]() -> string
-  {
-    boost::array<char, 1 << 10> a; // buffer overflow
-
-    boost::asio::deadline_timer timer(io);
-    timer.expires_from_now(boost::posix_time::seconds(15));
-
-    std::size_t size = -1;
-    mutex m;
-    m.lock();
-
-    timer.async_wait([&](const boost::system::error_code& error)
-    {
-      m.unlock();
-    });
-    socket.async_receive_from(boost::asio::buffer(a), me, [&](const boost::system::error_code& error, std::size_t _s)
-    {
-      timer.cancel();
-      size = _s;
-      m.unlock();
-    });
-
-    while (io.run_one())
-      if (m.try_lock())
-        break;
-    m.unlock();
-    if (size == -1)
-      return{};
-
-    a[size] = 0;
-    return{ &a[0] };
-  };
-
-  string answer = TryReadPacket();
-
-  string needle = "LOCATION: ";
-  auto pos = answer.find(needle);
-  if (pos == -1)
-    return "";
-  auto res = answer.substr(pos + needle.length());
-  return res.substr(0, res.find("\r\n"));
+  string answer = TryReadPacket(me, boost::posix_time::seconds(5));
+  return ExtractLocation(answer);
 }
