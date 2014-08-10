@@ -28,6 +28,7 @@ void t_irc()
 #include "../upnp/route_table.h"
 #include "../upnp/http_client.h"
 #include "../upnp/upnp.h"
+#include "../upnp/ssdp.h"
 
 void t_upnp()
 {
@@ -39,8 +40,11 @@ void t_upnp()
 
   for (auto local_ip : ips)
   {
-    upnp pp(io, local_ip, gw);
-    pp.OpenPort("test", 30000, upnp::UDP);
+    ssdp pp(io, local_ip);
+    auto res = pp.Discover();
+    std::cout << res;
+    //upnp pp(io, local_ip, gw);
+    //pp.OpenPort("test", 30000, upnp::UDP);
   }
   std::cout << "EXIT";
   std::this_thread::sleep_for(std::chrono::seconds(30));

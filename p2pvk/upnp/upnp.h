@@ -25,8 +25,5 @@ struct upnp
 
   bool OpenPort(string service_name, int port, IP_TYPE type);
   bool ClosePort(string service_name, int port, IP_TYPE type);
-
 private:
-  string Discover();
-  void GetAllLocalIfaces();
 };
