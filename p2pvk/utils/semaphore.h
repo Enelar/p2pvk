@@ -13,4 +13,6 @@ public:
 
   bool Move();
   bool Status();
+
+  auto Lock()->std::unique_lock<std::mutex>;
 };

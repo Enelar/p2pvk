@@ -1,10 +1,18 @@
 #include "log.h"
+#include "../utils/split.h"
 
 std::function<void(const string &anything)> (::Log);
 
 void logger::Log(const string &anything)
 {
-  stream.ChannelSay(anything);
+  auto parts = parser::Split(anything, '\n', true, false);
+  auto lk = sem.Lock();
+  for (auto p : parts)
+  {
+    const int max_part_size = 239;
+    for (auto i = 0; i < p.length(); i += max_part_size)
+      send_queue.push_back(p.substr(i, max_part_size));
+  }
 }
 
 #include <iostream>
@@ -15,7 +23,7 @@ logger::logger(boost::asio::io_service &io, const string &channel)
   stream.OnMessage([](irc &, string a){ std::cout << a << std::endl; });
   stream.Connect("p2p_" + irc::GenerateValidRandomNickSuffix(), "irc.freenode.org");
   stream.Join(channel);
-  Log("Logger connected");
+  StartWriteProject();
 }
 
 void PrepareLogFunction(boost::asio::io_service &_io)
@@ -28,4 +36,37 @@ void PrepareLogFunction(boost::asio::io_service &_io)
     static logger op(io);
     op.Log(anything);
   };
+}
+
+logger::~logger()
+{
+  auto lk = should_quit.Lock();
+  send_thread.get();
+}
+
+void logger::StartWriteProject()
+{
+  sem.TurnOff();
+  should_quit.TurnOff();
+
+  auto WritingFunctor = [this]()
+  {
+    string task;
+    while (true)
+    {
+      std::this_thread::sleep_for(1s);
+      {
+        auto lk = sem.Lock();
+        if (!send_queue.size())
+          if (should_quit.Status())
+            break;
+        task = send_queue.front();
+        send_queue.pop_front();
+      }
+      stream.ChannelSay(task);
+    }
+  };
+
+  send_thread = async(std::launch::async, WritingFunctor);
+  send_thread.wait_for(1ms);
 }

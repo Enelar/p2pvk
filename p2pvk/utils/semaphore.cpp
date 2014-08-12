@@ -27,3 +27,8 @@ bool semaphore::Status()
     TurnOff();
   return !ret;
 }
+
+auto semaphore::Lock()->std::unique_lock<std::mutex>
+{
+  return std::unique_lock<std::mutex>(m);
+}

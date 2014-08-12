@@ -15,39 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="upnp.h">
+    <ClInclude Include="split.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="route_table.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="route_rule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="http_client.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ssdp.h">
+    <ClInclude Include="semaphore.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="route_table.cpp">
+    <ClCompile Include="semaphore.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="upnp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="http_client.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ssdp_discover.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="soap.cpp">
+    <ClCompile Include="split.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

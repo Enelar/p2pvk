@@ -1,7 +1,7 @@
 #include "upnp.h"
 #include <boost\lexical_cast.hpp>
-#include "semaphore.h"
-#include "split.h"
+#include "../utils/semaphore.h"
+#include "../utils/split.h"
 #include "http_client.h"
 
 const std::string UPNPSERVICE_WANIPCONNECTION1 = "urn:schemas-upnp-org:service:WANIPConnection:1";

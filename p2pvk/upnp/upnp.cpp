@@ -4,18 +4,20 @@
 
 #include <mutex>
 #include <boost/array.hpp>
-#include "split.h"
+#include "../utils/split.h"
 
 using namespace boost::asio;
 
 #include "ssdp.h"
+#include "../log/log.h"
 
 bool upnp::OpenPort(string service_name, int port, IP_TYPE type)
 {
-  std::cout << "GATEWAY: " << gw << std::endl;
-  std::cout << "IP: " << me << std::endl;
+  Log("GATEWAY: " + gw);
+  Log("IP: " + me);
   ssdp pp(io, me);
   auto rpc_location = pp.Discover();
+  Log("FOUND: " + rpc_location);
   if (rpc_location == "")
     return false;
 
