@@ -58,13 +58,12 @@ void logger::StartWriteProject()
       {
         auto lk = sem.Lock();
         if (!send_queue.size())
-          continue;
+          if (should_quit.Status())
+            break;
         task = send_queue.front();
         send_queue.pop_front();
       }
       stream.ChannelSay(task);
-      if (should_quit.Status())
-        break;
     }
   };
 
