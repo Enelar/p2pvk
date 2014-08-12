@@ -25,5 +25,8 @@ struct upnp
 
   bool OpenPort(string service_name, int port, IP_TYPE type);
   bool ClosePort(string service_name, int port, IP_TYPE type);
-private:
+//private:
+  string SoapInitRequest( string ssdp_result_location );
+  string SoapPost(string addr, int port, string location, string message);
+  string SoapGet(string addr, int port, string location);
 };

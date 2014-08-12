@@ -45,12 +45,13 @@ std::string ssdp::TryReadPacket(boost::asio::ip::udp::endpoint me, boost::posix_
 
   timer.async_wait([&](const boost::system::error_code& error)
   {
+    if (error)
+      return;
     m.unlock();
   });
 
   socket.async_receive_from(boost::asio::buffer(a), me, [&](const boost::system::error_code& error, std::size_t _s)
   {
-    timer.cancel();
     size = _s;
     m.unlock();
   });
@@ -58,6 +59,7 @@ std::string ssdp::TryReadPacket(boost::asio::ip::udp::endpoint me, boost::posix_
   while (io.run_one())
     if (m.try_lock())
       break;
+  timer.cancel();
   m.unlock();
   if (size == -1)
     return{};

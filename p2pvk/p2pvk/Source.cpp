@@ -40,11 +40,8 @@ void t_upnp()
 
   for (auto local_ip : ips)
   {
-    ssdp pp(io, local_ip);
-    auto res = pp.Discover();
-    std::cout << res;
-    //upnp pp(io, local_ip, gw);
-    //pp.OpenPort("test", 30000, upnp::UDP);
+    upnp pp(io, local_ip, gw);
+    pp.OpenPort("test", 30000, upnp::UDP);
   }
   std::cout << "EXIT";
   std::this_thread::sleep_for(std::chrono::seconds(30));

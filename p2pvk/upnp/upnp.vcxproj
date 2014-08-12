@@ -90,12 +90,17 @@
     <ClInclude Include="http_client.h" />
     <ClInclude Include="route_rule.h" />
     <ClInclude Include="route_table.h" />
+    <ClInclude Include="semaphore.h" />
+    <ClInclude Include="split.h" />
     <ClInclude Include="ssdp.h" />
     <ClInclude Include="upnp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="http_client.cpp" />
     <ClCompile Include="route_table.cpp" />
+    <ClCompile Include="semaphore.cpp" />
+    <ClCompile Include="soap.cpp" />
+    <ClCompile Include="split.cpp" />
     <ClCompile Include="ssdp_discover.cpp" />
     <ClCompile Include="upnp.cpp" />
   </ItemGroup>
