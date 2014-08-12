@@ -2,6 +2,9 @@
 #include <boost\lexical_cast.hpp>
 #include "semaphore.h"
 #include "split.h"
+#include "http_client.h"
+
+const std::string UPNPSERVICE_WANIPCONNECTION1 = "urn:schemas-upnp-org:service:WANIPConnection:1";
 
 string upnp::SoapInitRequest(string ssdp_result_location)
 {  //"http://192.168.29.1:56854/rootDesc.xml"
@@ -32,7 +35,13 @@ string upnp::SoapInitRequest(string ssdp_result_location)
     }
   }
 
-  return SoapGet(gems.addr, boost::lexical_cast<int>(gems.port), gems.location);
+  auto res = SoapGet(gems.addr, boost::lexical_cast<int>(gems.port), gems.location);
+  auto parts = parser::Split(res, UPNPSERVICE_WANIPCONNECTION1, false, false);
+  UPNPNATHTTPClient client(gems.addr, boost::lexical_cast<int>(gems.port));
+  string a[3] = {"", "/WANIPCn.xml", UPNPSERVICE_WANIPCONNECTION1};
+  client.GetWANIPAddress(a[0], a[1], a[2]);
+
+  return res;
 }
 
 string upnp::SoapPost(string addr, int port, string location, string message)

@@ -21,7 +21,6 @@ bool upnp::OpenPort(string service_name, int port, IP_TYPE type)
 
   auto res = SoapInitRequest(rpc_location);
   std::cout << res << std::endl;
-  
   return true;
 }
 
@@ -29,5 +28,3 @@ bool upnp::ClosePort(string service_name, int port, IP_TYPE type)
 {
   return false;
 }
-
-const std::string UPNPSERVICE_WANIPCONNECTION1 = "urn:schemas-upnp-org:service:WANIPConnection:1";
