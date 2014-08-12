@@ -4,14 +4,8 @@
 #include "../utils/split.h"
 #include "http_client.h"
 
-const std::string UPNPSERVICE_WANIPCONNECTION1 = "urn:schemas-upnp-org:service:WANIPConnection:1";
-
 string upnp::SoapInitRequest(string ssdp_result_location)
 {  //"http://192.168.29.1:56854/rootDesc.xml"
-  struct
-  {
-    string addr, port, location;
-  } gems;
 
   {
     // http: // other
@@ -36,12 +30,35 @@ string upnp::SoapInitRequest(string ssdp_result_location)
   }
 
   auto res = SoapGet(gems.addr, boost::lexical_cast<int>(gems.port), gems.location);
-  auto parts = parser::Split(res, UPNPSERVICE_WANIPCONNECTION1, false, false);
-  UPNPNATHTTPClient client(gems.addr, boost::lexical_cast<int>(gems.port));
-  string a[3] = {"", "/WANIPCn.xml", UPNPSERVICE_WANIPCONNECTION1};
-  client.GetWANIPAddress(a[0], a[1], a[2]);
-
   return res;
+}
+
+void upnp::ExtractServices(const string &res)
+{
+  auto parts = parser::Split(res, "service>", false, false);
+  if (parts.size() < 2)
+    return;
+
+  auto ClearResult = [](const string &str)
+  {
+    return str.substr(0, str.length() - 2);    // "</"
+  };
+
+  auto ExtractResult = [ClearResult](const string &str, const string &filter)
+  {
+    auto parts = parser::Split(str, filter + ">", false, false);
+    return ClearResult(parts[1]);
+  };
+
+  for (auto i = 1; i < parts.size(); i += 2)
+  {
+    const auto &row = parts[i];
+    auto service_name = ExtractResult(row, "serviceType");
+    auto url = ExtractResult(row, "SCPDURL");
+
+    Log("Founded service: " + service_name + " AT " + url);
+    soap_services.insert({service_name, url});
+  }
 }
 
 string upnp::SoapPost(string addr, int port, string location, string message)

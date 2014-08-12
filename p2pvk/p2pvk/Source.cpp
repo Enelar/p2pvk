@@ -1,5 +1,5 @@
 #include <boost/asio.hpp>
-#include "../irc/irc.h"
+#include "../log/log.h"
 
 #include <iostream>
 boost::asio::io_service io;
@@ -41,13 +41,14 @@ void t_upnp()
   for (auto local_ip : ips)
   {
     upnp pp(io, local_ip, gw);
-    pp.OpenPort("test", 30000, upnp::UDP);
+    if (pp.OpenPort("test", 30000, upnp::UDP))
+      std::cout << "TEST OK" << std::endl;
+    else
+      std::cout << "TEST FAILED" << std::endl;
   }
-  std::cout << "EXIT";
-  std::this_thread::sleep_for(std::chrono::hours(1));
+  Log("Exit sequence initiated");
+  std::cout << std::endl << "== INITIATE EXIT SEQUENCE." << std::endl;
 }
-
-#include "../log/log.h"
 
 void main()
 {

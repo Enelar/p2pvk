@@ -107,6 +107,7 @@
     <ClCompile Include="http_client.cpp" />
     <ClCompile Include="route_table.cpp" />
     <ClCompile Include="soap.cpp" />
+    <ClCompile Include="soap_rpc.cpp" />
     <ClCompile Include="ssdp_discover.cpp" />
     <ClCompile Include="upnp.cpp" />
   </ItemGroup>

@@ -140,7 +140,6 @@ private:
 	"Content-Length: %d\r\n\r\n"
 
 #define HTTP_200\
-	"HTTP/"\
 	HTTP_VERSION\
 	" 200 OK"
 
@@ -256,3 +255,8 @@ private:
 	"<NewActiveConnectionIndex>%u</NewActiveConnectionIndex>"\
 	"<NewActiveConnDeviceContainer></NewActiveConnDeviceContainer>"\
 	"<NewActiveConnectionServiceID></NewActiveConnectionServiceID>"
+
+static const std::string UPNPSERVICE_LAYER3FORWARDING1 = "urn:schemas-upnp-org:service:Layer3Forwarding:1";
+static const std::string UPNPSERVICE_WANCOMMONINTERFACECONFIG1 = "urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1";
+static const std::string UPNPSERVICE_WANPPPCONNECTION1 = "urn:schemas-upnp-org:service:WANPPPConnection:1";
+static const std::string UPNPSERVICE_WANIPCONNECTION1 = "urn:schemas-upnp-org:service:WANIPConnection:1";

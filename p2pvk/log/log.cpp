@@ -1,7 +1,7 @@
 #include "log.h"
 #include "../utils/split.h"
 
-std::function<void(const string &anything)> (::Log);
+std::function<void(const string &anything)>(::Log) = [](const string &anything){};
 
 void logger::Log(const string &anything)
 {
@@ -60,6 +60,8 @@ void logger::StartWriteProject()
         if (!send_queue.size())
           if (should_quit.Status())
             break;
+          else
+            continue;
         task = send_queue.front();
         send_queue.pop_front();
       }

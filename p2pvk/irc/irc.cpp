@@ -13,7 +13,7 @@ irc::irc(io_service &_io)
 irc::~irc()
 {
   std::unique_lock<std::mutex> lk(m);
-  read_thread.get();
+  read_thread.wait();
 }
 
 void irc::Connect(string addr, int port)

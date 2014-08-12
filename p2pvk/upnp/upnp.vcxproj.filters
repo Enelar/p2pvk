@@ -50,5 +50,8 @@
     <ClCompile Include="soap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="soap_rpc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

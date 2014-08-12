@@ -1,17 +1,5 @@
 #include "http_client.h"
 
-const std::string UPNPSERVICE_LAYER3FORWARDING1 = std::string(
-  "urn:schemas-upnp-org:service:Layer3Forwarding:1");
-const std::string UPNPSERVICE_WANCOMMONINTERFACECONFIG1 = std::string(
-  "urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1");
-const std::string UPNPSERVICE_WANPPPCONNECTION1 = std::string(
-  "urn:schemas-upnp-org:service:WANPPPConnection:1");
-const std::string UPNPSERVICE_WANIPCONNECTION1 = std::string(
-  "urn:schemas-upnp-org:service:WANIPConnection:1");
-
-
-#include "http_client.h"
-
 #include <WinSock2.h>
 
 #include <boost\format.hpp>
@@ -19,6 +7,8 @@ const std::string UPNPSERVICE_WANIPCONNECTION1 = std::string(
 
 using namespace std;
 using namespace boost;
+
+#include "../utils/split.h"
 
 
 namespace {
@@ -405,7 +395,6 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
   string soap_args = boost::str(
     format(AA_GET_WANIPADDRESS)
     );
-  Log(soap_args);
   string soap_body = boost::str(
     format(SOAP_ENVELOPE)
     % AN_GET_WANIPADDRESS
@@ -413,7 +402,6 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
     % soap_args.c_str()
     % AN_GET_WANIPADDRESS
     );
-  Log(soap_body);
   string soap_request = boost::str(
     format(HTTP_POST_HEADER_TEMPLATE)
     % control_url.c_str()
@@ -425,7 +413,6 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
     );
 
   soap_request += soap_body;
-  Log(soap_request);
 
   Result res = SendRequest(soap_request);
   if (Failed == res)
@@ -442,30 +429,16 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
   if (soap_responce.find(HTTP_200) != string::npos)
   {
     string xml = soap_responce.substr(soap_responce.find("<?xml"), soap_responce.length());
-#if 0
-    DOMParser parser(xml, string("wanip"));
-
-    wstring tmp = parser.GetElementsContent(wstring(L"NewExternalIPAddress"));
-    if (tmp.empty())
-      return SoapIllegalResponce;
-    try{
-      wanip = boost::lexical_cast<string, wstring>(tmp);
-    }
-    catch (bad_lexical_cast &e)
-    {
-//      BHDebug(false, e.what());
-      return SoapIllegalResponce;
-    }
-
-    if (wanip.empty() /*| CheckIPFormat(wanip, false)*/)
-    {
+    auto parts = parser::Split(xml, "NewExternalIPAddress>", false, false);
+    if (!parts.size())
       return SoapParseError;
-    }
-#endif
+    else if (parts.size() != 3)
+      return SoapIllegalResponce;
+    wanip = parser::Split(parts[1], "</", true, false)[0];
     return SoapSucceeded;
   }
-
-//  aconsole(soap_responce);
+  Log(soap_request);
+  Log(soap_responce);
   return SoapFailed;
 }
 
@@ -500,7 +473,7 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::AddPortMapping(
     % external_port
     % protocol.c_str()
     % internal_port
-    % pimpl->host.c_str()
+    % igd_internal_ip // pimpl->host.c_str()
     % desc.c_str()
     );
   string soap_body = boost::str(
@@ -532,11 +505,12 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::AddPortMapping(
 //  dout(http_debug, soap_request);
   string soap_responce = ReceiveResponce();
 //  dout(http_debug, soap_responce);
-  Log(soap_responce);
   if (soap_responce.find(HTTP_200) != string::npos)
   {
     return SoapSucceeded;
   }
+  Log(soap_request);
+  Log(soap_responce);
 
   return SoapFailed;
 }

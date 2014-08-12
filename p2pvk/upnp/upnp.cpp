@@ -11,6 +11,8 @@ using namespace boost::asio;
 #include "ssdp.h"
 #include "../log/log.h"
 
+#include <boost\lexical_cast.hpp>
+
 bool upnp::OpenPort(string service_name, int port, IP_TYPE type)
 {
   Log("GATEWAY: " + gw);
@@ -22,8 +24,11 @@ bool upnp::OpenPort(string service_name, int port, IP_TYPE type)
     return false;
 
   auto res = SoapInitRequest(rpc_location);
-  std::cout << res << std::endl;
-  return true;
+  ExtractServices(res);
+  auto wanip = GetWanIp();
+  Log("Determined WAN: " + wanip);
+  Log("Open port " + boost::lexical_cast<string>(port) + " for " + service_name);
+  return SoapOpenPort(service_name, port, port, type);
 }
 
 bool upnp::ClosePort(string service_name, int port, IP_TYPE type)
