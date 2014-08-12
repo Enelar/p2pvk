@@ -63,6 +63,7 @@
       <MinimalRebuild>false</MinimalRebuild>
       <FloatingPointModel>Fast</FloatingPointModel>
       <EnableParallelCodeGeneration>false</EnableParallelCodeGeneration>
+      <AdditionalOptions>/FI "../log/log.h" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -83,6 +84,7 @@
       <FloatingPointModel>Fast</FloatingPointModel>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableParallelCodeGeneration>true</EnableParallelCodeGeneration>
+      <AdditionalOptions>/FI "../log/log.h" %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -98,19 +100,23 @@
     <ClInclude Include="http_client.h" />
     <ClInclude Include="route_rule.h" />
     <ClInclude Include="route_table.h" />
-    <ClInclude Include="semaphore.h" />
-    <ClInclude Include="split.h" />
     <ClInclude Include="ssdp.h" />
     <ClInclude Include="upnp.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="http_client.cpp" />
     <ClCompile Include="route_table.cpp" />
-    <ClCompile Include="semaphore.cpp" />
     <ClCompile Include="soap.cpp" />
-    <ClCompile Include="split.cpp" />
     <ClCompile Include="ssdp_discover.cpp" />
     <ClCompile Include="upnp.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\log\log.vcxproj">
+      <Project>{e4c1216f-1fd0-4d94-b60e-6a17de84ffbe}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\utils\utils.vcxproj">
+      <Project>{9a959ae7-b15b-4fc3-83cb-de0c5c2cf364}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

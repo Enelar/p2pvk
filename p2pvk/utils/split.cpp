@@ -52,7 +52,7 @@ std::vector<std::string> parser::Split(const std::string &str, const std::string
     else
       EmptyHook(str);
   };
-  int i = 0, pos;
+  unsigned int i = 0, pos;
   while (i < str.length())
   {
     pos = str.find(delimeter, i + 1);

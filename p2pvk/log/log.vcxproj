@@ -17,6 +17,9 @@
     <ProjectReference Include="..\irc\irc.vcxproj">
       <Project>{08630f52-4d72-417e-863a-0b4ddc4ba722}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\utils\utils.vcxproj">
+      <Project>{9a959ae7-b15b-4fc3-83cb-de0c5c2cf364}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp" />

@@ -405,6 +405,7 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
   string soap_args = boost::str(
     format(AA_GET_WANIPADDRESS)
     );
+  Log(soap_args);
   string soap_body = boost::str(
     format(SOAP_ENVELOPE)
     % AN_GET_WANIPADDRESS
@@ -412,6 +413,7 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
     % soap_args.c_str()
     % AN_GET_WANIPADDRESS
     );
+  Log(soap_body);
   string soap_request = boost::str(
     format(HTTP_POST_HEADER_TEMPLATE)
     % control_url.c_str()
@@ -423,6 +425,7 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
     );
 
   soap_request += soap_body;
+  Log(soap_request);
 
   Result res = SendRequest(soap_request);
   if (Failed == res)

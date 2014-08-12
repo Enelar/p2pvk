@@ -33,12 +33,6 @@
     <ClInclude Include="ssdp.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="semaphore.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
-    <ClInclude Include="split.h">
-      <Filter>Source Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="route_table.cpp">
@@ -54,12 +48,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="soap.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="semaphore.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="split.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
