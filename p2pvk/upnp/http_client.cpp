@@ -532,7 +532,7 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::AddPortMapping(
 //  dout(http_debug, soap_request);
   string soap_responce = ReceiveResponce();
 //  dout(http_debug, soap_responce);
-
+  Log(soap_responce);
   if (soap_responce.find(HTTP_200) != string::npos)
   {
     return SoapSucceeded;

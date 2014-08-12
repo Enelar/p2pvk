@@ -44,7 +44,7 @@ void t_upnp()
     pp.OpenPort("test", 30000, upnp::UDP);
   }
   std::cout << "EXIT";
-  std::this_thread::sleep_for(std::chrono::seconds(30));
+  std::this_thread::sleep_for(std::chrono::hours(1));
 }
 
 #include "../log/log.h"

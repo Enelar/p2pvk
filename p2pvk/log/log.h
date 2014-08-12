@@ -21,6 +21,8 @@ public:
   ~logger();
 
   void Log(const string &anything);
+private:
+  void StartWriteProject();
 };
 
 #include <functional>
