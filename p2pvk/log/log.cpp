@@ -1,10 +1,13 @@
 #include "log.h"
+#include "../utils/split.h"
 
 std::function<void(const string &anything)> (::Log);
 
 void logger::Log(const string &anything)
 {
-  stream.ChannelSay(anything);
+  auto parts = parser::Split(anything, '\n', true, false);
+  for (auto p : parts)
+    stream.ChannelSay(p);
 }
 
 #include <iostream>
@@ -15,7 +18,6 @@ logger::logger(boost::asio::io_service &io, const string &channel)
   stream.OnMessage([](irc &, string a){ std::cout << a << std::endl; });
   stream.Connect("p2p_" + irc::GenerateValidRandomNickSuffix(), "irc.freenode.org");
   stream.Join(channel);
-  Log("Logger connected");
 }
 
 void PrepareLogFunction(boost::asio::io_service &_io)
