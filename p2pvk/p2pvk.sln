@@ -8,6 +8,11 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "irc", "irc\irc.vcxproj", "{08630F52-4D72-417E-863A-0B4DDC4BA722}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "upnp", "upnp\upnp.vcxproj", "{364749E8-8C5C-4573-97FF-22A586F80FC5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{E4C1216F-1FD0-4D94-B60E-6A17DE84FFBE} = {E4C1216F-1FD0-4D94-B60E-6A17DE84FFBE}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "log", "log\log.vcxproj", "{E4C1216F-1FD0-4D94-B60E-6A17DE84FFBE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -27,6 +32,10 @@ Global
 		{364749E8-8C5C-4573-97FF-22A586F80FC5}.Debug|Win32.Build.0 = Debug|Win32
 		{364749E8-8C5C-4573-97FF-22A586F80FC5}.Release|Win32.ActiveCfg = Release|Win32
 		{364749E8-8C5C-4573-97FF-22A586F80FC5}.Release|Win32.Build.0 = Release|Win32
+		{E4C1216F-1FD0-4D94-B60E-6A17DE84FFBE}.Debug|Win32.ActiveCfg = Debug|Win32
+		{E4C1216F-1FD0-4D94-B60E-6A17DE84FFBE}.Debug|Win32.Build.0 = Debug|Win32
+		{E4C1216F-1FD0-4D94-B60E-6A17DE84FFBE}.Release|Win32.ActiveCfg = Release|Win32
+		{E4C1216F-1FD0-4D94-B60E-6A17DE84FFBE}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

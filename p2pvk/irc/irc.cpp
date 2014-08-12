@@ -105,3 +105,29 @@ void irc::OnMessage(function<void(irc &, string)> f)
   read_thread = async(std::launch::async, ReadingFunctor);
   read_thread.wait_for(std::chrono::microseconds(1));
 }
+
+namespace
+{
+  auto Alphabet() -> const string
+  {
+    return
+      "abcdefghijklmnopqrstuvwxyz"
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "1234567890";
+  }
+}
+
+#include <boost\random.hpp>
+#include <boost\random\random_device.hpp>
+
+string irc::GenerateValidRandomNickSuffix( int length )
+{
+  auto &chars = Alphabet();
+  boost::random::random_device rng;
+  boost::random::uniform_int_distribution<> index_dist(0, chars.size() - 1);
+
+  std::stringstream ss;
+  for (int i = 0; i < length; ++i)
+    ss << chars[index_dist(rng)];
+  return ss.str();
+}
