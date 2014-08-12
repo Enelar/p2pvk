@@ -47,7 +47,10 @@ void t_upnp()
   std::this_thread::sleep_for(std::chrono::seconds(30));
 }
 
+#include "../log/log.h"
+
 void main()
 {
+  PrepareLogFunction(io);
   t_upnp();
 }

@@ -26,6 +26,7 @@ public:
   irc(const irc &) = delete;
   void Connect(string addr, int port = 6667);
   void Connect(string nick, string addr, int port = 6667);
+  static string GenerateValidRandomNickSuffix( int length = 8);
 
   void Join(string channel);
   void Send(string msg);
