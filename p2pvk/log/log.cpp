@@ -8,7 +8,11 @@ void logger::Log(const string &anything)
   auto parts = parser::Split(anything, '\n', true, false);
   auto lk = sem.Lock();
   for (auto p : parts)
-    send_queue.push_back(p);
+  {
+    const int max_part_size = 239;
+    for (auto i = 0; i < p.length(); i += max_part_size)
+      send_queue.push_back(p.substr(i, max_part_size));
+  }
 }
 
 #include <iostream>
