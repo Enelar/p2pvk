@@ -131,7 +131,7 @@ private:
 	""//todo
 
 #define HTTP_POST_HEADER_TEMPLATE\
-	"POST %s HTTP"\
+	"POST %s HTTP/"\
 	HTTP_VERSION\
 	"\r\n"\
 	"HOST: %s:%u\r\n"\

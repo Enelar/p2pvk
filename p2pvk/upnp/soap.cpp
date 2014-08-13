@@ -54,7 +54,7 @@ void upnp::ExtractServices(const string &res)
   {
     const auto &row = parts[i];
     auto service_name = ExtractResult(row, "serviceType");
-    auto url = ExtractResult(row, "SCPDURL");
+    auto url = ExtractResult(row, "controlURL");
 
     Log("Founded service: " + service_name + " AT " + url);
     soap_services.insert({service_name, url});
