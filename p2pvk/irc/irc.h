@@ -39,4 +39,6 @@ public:
   string ReadOnce();
 
   void OnMessage(function<void(irc &, string)>);
+
+  bool IsConnected() const;
 };

@@ -62,6 +62,8 @@ void logger::StartWriteProject()
             break;
           else
             continue;
+        if (!stream.IsConnected())
+          continue;
         task = send_queue.front();
         send_queue.pop_front();
       }

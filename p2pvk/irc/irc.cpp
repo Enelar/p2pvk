@@ -103,6 +103,11 @@ void irc::OnMessage(function<void(irc &, string)> f)
   read_thread.wait_for(std::chrono::microseconds(1));
 }
 
+bool irc::IsConnected() const
+{
+  return connected;
+}
+
 namespace
 {
   auto Alphabet() -> const string
