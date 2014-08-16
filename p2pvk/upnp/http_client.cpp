@@ -428,8 +428,7 @@ UPNPNATHTTPClient::SoapResult UPNPNATHTTPClient::GetWANIPAddress(
   string tt(HTTP_200);
   if (soap_responce.find(HTTP_200) != string::npos)
   {
-    string xml = soap_responce.substr(soap_responce.find("<?xml"), soap_responce.length());
-    auto parts = parser::Split(xml, "NewExternalIPAddress>", false, false);
+    auto parts = parser::Split(soap_responce, "NewExternalIPAddress>", false, false);
     if (!parts.size())
       return SoapParseError;
     else if (parts.size() != 3)
