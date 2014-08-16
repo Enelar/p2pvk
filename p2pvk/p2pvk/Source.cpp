@@ -32,26 +32,16 @@ void t_irc()
 
 void t_upnp()
 {
-  route_table t;
-  auto gw = t.Gateway();
-  std::cout << gw << std::endl;
-
-  auto ips = t.LocalAddrToGW(gw);
-
-  for (auto local_ip : ips)
-  {
-    upnp pp(io, local_ip, gw);
-    if (pp.OpenPort("test", 30000, upnp::UDP))
-      std::cout << "TEST OK" << std::endl;
-    else
-      std::cout << "TEST FAILED" << std::endl;
-  }
-  Log("Exit sequence initiated");
-  std::cout << std::endl << "== INITIATE EXIT SEQUENCE." << std::endl;
+  upnp test(io);
+  auto res = test.OpenPort("test", 30000, upnp::UDP);
+  std::cout << res << std::endl;
+  Log("TEST " + res ? "OK" : "FAIL");
 }
 
 void main()
 {
   PrepareLogFunction(io);
   t_upnp();
+  Log("Exit sequence initiated");
+  std::cout << std::endl << "== INITIATE EXIT SEQUENCE." << std::endl;
 }

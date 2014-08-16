@@ -26,7 +26,7 @@ string upnp::GetWanIp()
   return ret;
 }
 
-bool upnp::SoapOpenPort(const string &service_name, int externport, int localport, IP_TYPE proto )
+bool upnp::SoapOpenPort(const string &service_name, int externport, int localport, string me, IP_TYPE proto )
 {
   auto service = soap_services[ActiveWanKey()];
   string a[10] = {""};

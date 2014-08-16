@@ -13,22 +13,38 @@ using namespace boost::asio;
 
 #include <boost\lexical_cast.hpp>
 
+#include "route_table.h"
+
+upnp::upnp(boost::asio::io_service &_io)
+  : io(_io)
+{
+}
+
 bool upnp::OpenPort(string service_name, int port, IP_TYPE type)
 {
-  Log("GATEWAY: " + gw);
-  Log("IP: " + me);
-  ssdp pp(io, me);
-  auto rpc_location = pp.Discover();
-  Log("FOUND: " + rpc_location);
-  if (rpc_location == "")
-    return false;
+  route_table t;
+  auto gw = t.Gateway();
+  std::cout << gw << std::endl;
 
-  auto res = SoapInitRequest(rpc_location);
-  ExtractServices(res);
-  auto wanip = GetWanIp();
-  Log("Determined WAN: " + wanip);
-  Log("Open port " + boost::lexical_cast<string>(port) + " for " + service_name);
-  return SoapOpenPort(service_name, port, port, type);
+  auto ips = t.LocalAddrToGW(gw);
+
+  for (auto me : ips)
+  {
+    ssdp pp(io, me);
+    auto rpc_location = pp.Discover();
+    if (rpc_location == "")
+      continue;
+
+    auto res = SoapInitRequest(rpc_location);
+    ExtractServices(res);
+    auto wanip = GetWanIp();
+    Log("Determined WAN: " + wanip);
+    Log("Open port " + boost::lexical_cast<string>(port) + " for " + service_name);
+    if (SoapOpenPort(service_name, port, port, me, type))
+      return true;
+  }
+
+  return false;
 }
 
 bool upnp::ClosePort(string service_name, int port, IP_TYPE type)

@@ -13,10 +13,8 @@ using namespace std;
 struct upnp
 {
   boost::asio::io_service &io;
-  string me, gw;
 
-  upnp(boost::asio::io_service &_io, string my_ip, string gw_ip) : io(_io), me(my_ip), gw(gw_ip)
-  {}
+  upnp(boost::asio::io_service &_io);
 
   enum IP_TYPE
   {
@@ -40,7 +38,7 @@ private:
   void ExtractServices(const string &);
 
   string GetWanIp();
-  bool SoapOpenPort(const string &service_name, int externport, int localport, IP_TYPE proto);
+  bool SoapOpenPort(const string &service_name, int externport, int localport, string me, IP_TYPE proto);
 
   string ActiveWanKey();
 };
