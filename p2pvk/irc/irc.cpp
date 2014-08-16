@@ -31,10 +31,6 @@ void irc::Connect(string nick, string addr, int port)
 {
   Connect(addr, port);
 
-  // Some magic from Tyler Allen
-  // http://www.the-tech-tutorial.com/simple-c-irc-bot-template/
-  while (load_strings < 4)
-    ReadOnce();
   Say("NICK " + nick);
   Say("USER guest tolmoon tolsun :Mr.Noname");
 }
