@@ -20,8 +20,8 @@ void logger::Log(const string &anything)
 logger::logger(boost::asio::io_service &io, const string &channel)
   : stream(io)
 {
-  stream.OnMessage([](irc &, string a){ std::cout << a << std::endl; });
   stream.Connect("p2p_" + irc::GenerateValidRandomNickSuffix(), "irc.freenode.org");
+  stream.OnMessage([](irc &, string a){ std::cout << a << std::endl; });
   stream.Join(channel);
   StartWriteProject();
 }
