@@ -33,9 +33,8 @@ void irc::Connect(string nick, string addr, int port)
 
   // Some magic from Tyler Allen
   // http://www.the-tech-tutorial.com/simple-c-irc-bot-template/
-  ReadOnce();
-  ReadOnce();
-  ReadOnce();
+  while (load_strings < 4)
+    ReadOnce();
   Say("NICK " + nick);
   Say("USER guest tolmoon tolsun :Mr.Noname");
 }
@@ -49,6 +48,8 @@ string irc::ReadOnce()
   ss << &b;
   auto ret = ss.str();
   UpdateConnectedStatus(ret);
+  if (!connected)
+    load_strings += std::count(ret.begin(), ret.end(), '\n');
   return ret;
 }
 

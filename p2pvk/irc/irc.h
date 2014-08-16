@@ -20,6 +20,7 @@ class irc
   void UpdateConnectedStatus(const string &str);
 
   string last_channel;
+  int load_strings = 0;
 public:
   irc(boost::asio::io_service &);
   ~irc();
