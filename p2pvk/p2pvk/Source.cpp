@@ -1,11 +1,12 @@
 #include <boost/asio.hpp>
-#include "../irc/irc.h"
+#include "../log/log.h"
 
 #include <iostream>
+boost::asio::io_service io;
 
-void f()
+
+void t_irc()
 {
-  boost::asio::io_service io;
 
   irc test(io);
   test.Connect("Enetest434", "irc.freenode.org");
@@ -24,7 +25,23 @@ void f()
   }
 }
 
+#include "../upnp/route_table.h"
+#include "../upnp/http_client.h"
+#include "../upnp/upnp.h"
+#include "../upnp/ssdp.h"
+
+void t_upnp()
+{
+  upnp test(io);
+  auto res = test.OpenPort("test", 30000, upnp::UDP);
+  std::cout << res << std::endl;
+  Log("TEST " + res ? "OK" : "FAIL");
+}
+
 void main()
 {
-  f();
+  PrepareLogFunction(io);
+  t_upnp();
+  Log("Exit sequence initiated");
+  std::cout << std::endl << "== INITIATE EXIT SEQUENCE." << std::endl;
 }

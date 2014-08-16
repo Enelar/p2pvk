@@ -13,7 +13,7 @@ irc::irc(io_service &_io)
 irc::~irc()
 {
   std::unique_lock<std::mutex> lk(m);
-  read_thread.get();
+  read_thread.wait();
 }
 
 void irc::Connect(string addr, int port)
@@ -31,11 +31,6 @@ void irc::Connect(string nick, string addr, int port)
 {
   Connect(addr, port);
 
-  // Some magic from Tyler Allen
-  // http://www.the-tech-tutorial.com/simple-c-irc-bot-template/
-  ReadOnce();
-  ReadOnce();
-  ReadOnce();
   Say("NICK " + nick);
   Say("USER guest tolmoon tolsun :Mr.Noname");
 }
@@ -49,6 +44,8 @@ string irc::ReadOnce()
   ss << &b;
   auto ret = ss.str();
   UpdateConnectedStatus(ret);
+  if (!connected)
+    load_strings += std::count(ret.begin(), ret.end(), '\n');
   return ret;
 }
 
@@ -104,4 +101,30 @@ void irc::OnMessage(function<void(irc &, string)> f)
 
   read_thread = async(std::launch::async, ReadingFunctor);
   read_thread.wait_for(std::chrono::microseconds(1));
+}
+
+namespace
+{
+  auto Alphabet() -> const string
+  {
+    return
+      "abcdefghijklmnopqrstuvwxyz"
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "1234567890";
+  }
+}
+
+#include <boost\random.hpp>
+#include <boost\random\random_device.hpp>
+
+string irc::GenerateValidRandomNickSuffix( int length )
+{
+  auto &chars = Alphabet();
+  boost::random::random_device rng;
+  boost::random::uniform_int_distribution<> index_dist(0, chars.size() - 1);
+
+  std::stringstream ss;
+  for (int i = 0; i < length; ++i)
+    ss << chars[index_dist(rng)];
+  return ss.str();
 }
