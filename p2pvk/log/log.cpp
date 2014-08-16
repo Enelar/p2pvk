@@ -41,7 +41,7 @@ void PrepareLogFunction(boost::asio::io_service &_io)
 logger::~logger()
 {
   auto lk = should_quit.Lock();
-  send_thread.get();
+  send_thread.wait();
 }
 
 void logger::StartWriteProject()
