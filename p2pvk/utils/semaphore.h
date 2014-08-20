@@ -1,5 +1,6 @@
 #pragma once
 
+#include "crt.h"
 #include <atomic>
 #include <boost\noncopyable.hpp>
 

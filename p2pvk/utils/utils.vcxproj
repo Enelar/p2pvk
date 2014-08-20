@@ -11,6 +11,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="crt.h" />
+    <ClInclude Include="header.h" />
     <ClInclude Include="semaphore.h" />
     <ClInclude Include="split.h" />
   </ItemGroup>

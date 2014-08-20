@@ -9,6 +9,7 @@
 using namespace boost::asio::ip;
 
 #include <memory>
+#include "../utils/crt.h"
 
 rpc::~rpc()
 {
@@ -26,23 +27,20 @@ rpc::rpc(boost::asio::io_service &_io, int local_port, int extern_port)
   auto Pooler = [this](ip::tcp::acceptor *accept, const bool is_extern, std::function<void(std::unique_ptr<rpc_instance> &)> OnNew )
   {
     semaphore ready;
+
+    std::unique_ptr<rpc_instance> new_connection;
+    auto AcceptCallback = [&, this](const boost::system::error_code& error)
+    {
+
+    };
+
     while (true)
     {
-      auto new_connection = std::make_unique<rpc_instance>(io, is_extern);
-
-      accept->async_accept(new_connection->socket, [&, this](const boost::system::error_code& error)
-      {
-        if (error)
-        {
-          ready.TurnOff();
-          return;
-        }
-        OnNew(new_connection);
-        ready.TurnOff();
-      });
-
+      new_connection = std::make_unique<rpc_instance>(io, !is_extern);
+      auto binded_callback = std::bind(&rpc::AcceptCallback, shared_from_this(), std::ref(ready), is_extern, std::ref(new_connection), std::placeholders::_1);
+      accept->async_accept(new_connection->socket, binded_callback);
     loop:
-      std::this_thread::sleep_for(100ms);
+      std::this_thread::sleep_for(1ms);
       if (!exit.Status())
         break;
       if (!ready.Status())
@@ -58,20 +56,34 @@ rpc::rpc(boost::asio::io_service &_io, int local_port, int extern_port)
     [this, Pooler]()
   {
     using namespace std;
+#define THREAD_DEBUG
     auto local = std::async(std::launch::async, Pooler, &local_socket, false, [this](std::unique_ptr<rpc_instance> &con)
     {
-      locals.insert({ "NEW", move(*con.release()) });
+      //locals.insert({ "NEW", move(*con.release()) });
     });
+#ifndef THREAD_DEBUG
     auto external = std::async(std::launch::async, Pooler, &extern_socket, true, [this](std::unique_ptr<rpc_instance> &con)
     {
       externs.insert({"NEW", move(*con.release())});
     });
 
-    local.wait();
     external.wait();
+#endif
+    local.wait();
     Log("Pooler finished");
   });
   acceptor.wait_for(1ms);
+}
+
+void rpc::AcceptCallback(semaphore &ready, bool is_extern, std::unique_ptr<rpc_instance> &, const boost::system::error_code& error)
+{
+  if (error)
+  {
+    ready.TurnOff();
+    return;
+  }
+  //OnNew(new_connection);
+  ready.TurnOff();
 }
 
 

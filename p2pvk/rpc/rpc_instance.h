@@ -13,6 +13,9 @@ struct rpc_instance
 
   rpc_instance(io_service &_io, bool _is_local) : io(_io), socket(io), is_local(_is_local)
   {}
+  ~rpc_instance()
+  {
+  }
 
   rpc_instance(rpc_instance &&);
 
