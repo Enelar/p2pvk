@@ -9,9 +9,8 @@ using namespace boost::asio;
 #include "../utils/semaphore.h"
 
 #include <future>
-#include <boost\enable_shared_from_this.hpp>
 
-struct rpc : boost::noncopyable, boost::enable_shared_from_this<rpc>
+struct rpc : boost::noncopyable, std::enable_shared_from_this<rpc>
 {
   semaphore exit;
   io_service &io;
@@ -22,6 +21,9 @@ struct rpc : boost::noncopyable, boost::enable_shared_from_this<rpc>
 public:
   rpc(boost::asio::io_service &io, int local_port = 30238, int extern_port = 30240);
   ~rpc();
+
+  void Run();
+  void Stop();
 private:
   ip::tcp::acceptor OpenLocalPort(int port) const;
   ip::tcp::acceptor OpenGlobalPort(int port, const std::string &name = "p2pvk_dev") const;

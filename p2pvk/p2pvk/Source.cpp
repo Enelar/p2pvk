@@ -12,13 +12,15 @@ _CrtMemState s1, s2, s3;
 
 void t_f()
 {
-  rpc test(io);
+  auto test = std::make_shared<rpc>(io);
+  test->Run();
 //  _CrtSetBreakAlloc(1300);
-  for (auto i = 0; i < 200; i++)
+  for (auto i = 0; i < 2; i++)
   {
     std::this_thread::sleep_for(1s);
     io.run();
   }
+  test->Stop();
   // memory allocations take place here
   _CrtMemDumpAllObjectsSince(&s1);
   _CrtMemCheckpoint(&s2);
