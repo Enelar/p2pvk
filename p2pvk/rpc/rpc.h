@@ -12,14 +12,15 @@ using namespace boost::asio;
 
 struct rpc : boost::noncopyable
 {
+  semaphore exit;
   io_service &io;
   ip::tcp::acceptor local_socket, extern_socket;
 
   std::map<std::string, rpc_instance> locals, externs;
-  semaphore exit;
   std::future<void> acceptor;
 public:
   rpc(boost::asio::io_service &io, int local_port = 30238, int extern_port = 30240);
+  ~rpc();
 private:
   ip::tcp::acceptor OpenLocalPort(int port) const;
   ip::tcp::acceptor OpenGlobalPort(int port, const std::string &name = "p2pvk_dev") const;

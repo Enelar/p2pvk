@@ -3,10 +3,19 @@
 #include <iostream>
 #include <boost\lexical_cast.hpp>
 
+#include "../log/log.h"
+
 
 using namespace boost::asio::ip;
 
 #include <memory>
+
+rpc::~rpc()
+{
+  exit.TurnOff();
+  while (acceptor.wait_for(1ms) != future_status::ready)
+    io.run();
+}
 
 rpc::rpc(boost::asio::io_service &_io, int local_port, int extern_port)
   : io(_io), local_socket(_io), extern_socket(_io)
@@ -17,7 +26,7 @@ rpc::rpc(boost::asio::io_service &_io, int local_port, int extern_port)
   auto Pooler = [this](ip::tcp::acceptor *accept, const bool is_extern, std::function<void(std::unique_ptr<rpc_instance> &)> OnNew )
   {
     semaphore ready;
-    while (exit.Status())
+    while (true)
     {
       auto new_connection = std::make_unique<rpc_instance>(io, is_extern);
 
@@ -41,8 +50,7 @@ rpc::rpc(boost::asio::io_service &_io, int local_port, int extern_port)
 
       ready.TurnOn();
     }
-    if (ready.Status())
-      accept->close();
+    accept->close();
     ready.Lock();
   };
 
@@ -61,6 +69,7 @@ rpc::rpc(boost::asio::io_service &_io, int local_port, int extern_port)
 
     local.wait();
     external.wait();
+    Log("Pooler finished");
   });
   acceptor.wait_for(1ms);
 }
