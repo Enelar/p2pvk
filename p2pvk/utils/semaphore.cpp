@@ -1,4 +1,6 @@
 #include "semaphore.h"
+#include <thread>
+using namespace std;
 
 semaphore::semaphore(bool strict) : is_strict(strict)
 {
@@ -15,17 +17,17 @@ semaphore::~semaphore()
 
 void semaphore::TurnOn()
 {
-  m.lock();
+  spinlock.test_and_set();
 }
 
 void semaphore::TurnOff()
 {
-  m.unlock();
+  spinlock.clear();
 }
 
 bool semaphore::Move()
 {
-  return m.try_lock();
+  return !spinlock.test_and_set();
 }
 
 bool semaphore::Status()
@@ -36,7 +38,10 @@ bool semaphore::Status()
   return !ret;
 }
 
-auto semaphore::Lock()->std::unique_lock<std::mutex>
+auto semaphore::Lock()->lock_guard
 {
-  return std::unique_lock<std::mutex>(m);
+  while (spinlock.test_and_set())
+    std::this_thread::sleep_for(10us);
+
+  return{ *this };
 }
