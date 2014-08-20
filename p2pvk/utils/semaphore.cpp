@@ -1,8 +1,16 @@
 #include "semaphore.h"
 
-semaphore::semaphore()
+semaphore::semaphore(bool strict) : is_strict(strict)
 {
   TurnOn();
+}
+
+semaphore::~semaphore()
+{
+  if (is_strict)
+    return;
+  Move();
+  TurnOff();
 }
 
 void semaphore::TurnOn()

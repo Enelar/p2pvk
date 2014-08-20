@@ -5,8 +5,10 @@
 class semaphore
 {
   std::mutex m;
+  bool is_strict;
 public:
-  semaphore();
+  semaphore(bool strict = false);
+  ~semaphore();
 
   void TurnOn();
   void TurnOff();
