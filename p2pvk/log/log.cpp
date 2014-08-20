@@ -1,7 +1,11 @@
 #include "log.h"
 #include "../utils/split.h"
+#include <iostream>
 
-std::function<void(const string &anything)>(::Log) = [](const string &anything){};
+std::function<void(const string &anything)>(::Log) = [](const string &anything)
+{
+  std::cout << anything << std::endl;
+};
 
 void logger::Log(const string &anything)
 {
